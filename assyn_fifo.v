@@ -1,7 +1,8 @@
 
-module fifo_asy( output [7:0] dataout,
+module fifo_asy( output reg [7:0] dataout,
 					output full, empty,
 						input [7:0] datain,
+						input rd_en,wr_en,
 						input rd_clk,wr_clk,rst);
 
 reg [3:0] rd_pointer, rd_sync_1,rd_sync_2;
@@ -15,17 +16,24 @@ wire [3:0] rd_pointer_sync,wr_pointer_sync,rd_pointer_g,wr_pointer_g;
 always @(posedge wr_clk or posedge rst) begin
 	if(rst) 
 		wr_pointer <= 0;
-	else if(!full) begin
+	else if(!full && wr_en) begin
 			wr_pointer <= wr_pointer + 1;
 			mem[wr_pointer[2:0]] <= datain;
 		end
 end
 
 always @(posedge rd_clk or posedge rst) begin
-	if(rst)
+	if(rst) begin
 		rd_pointer <= 0;
-	else if(!empty)
+		dataout <= 'dz;
+	end
+	else if(!empty && rd_en)
+	begin
 		rd_pointer <= rd_pointer  + 1;
+		dataout <= mem [ rd_pointer[2:0]];
+	end
+	else
+		dataout <= 'dz; 
 end
 
 
@@ -37,13 +45,13 @@ end
 always @(posedge wr_clk) begin
 	rd_sync_1 <= rd_pointer_g;
  	rd_sync_2 <= rd_sync_1;
-end
+end 
 
 
-	assign full = ((wr_pointer[3]!=rd_pointer_sync[3]) && (wr_pointer[2:0]== rd_pointer_sync[2:0]))?1:0;
+assign full = ((wr_pointer[3]!=rd_pointer_sync[3]) && (wr_pointer[2:0] == rd_pointer_sync[2:0]))?1:0;
 assign empty = (wr_pointer_sync == rd_pointer)?1:0;
 
-assign dataout = mem [ rd_pointer[2:0]];
+//assign dataout = mem [ rd_pointer[2:0]];
 
 assign wr_pointer_g =  wr_pointer^(wr_pointer >> 1);
 assign rd_pointer_g =  rd_pointer^(rd_pointer >> 1);
