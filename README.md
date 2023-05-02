@@ -31,18 +31,20 @@ the asynchronous input, respectively.
 
 instead of using a flop synchronizer for each flipflop, we can use a single flop synchronizer for each flipflop. We can use a single flop synchronizer to control the path for multi-bit data and that can be controlled by a mux
 ![image](https://user-images.githubusercontent.com/130048247/235584244-c5f746cc-afdb-4a36-bc20-e1674987041c.png)
-![image](https://user-images.githubusercontent.com/130048247/235584805-055a6548-3e43-46e6-985c-78c32e88a29c.png)
+
 
 
 ## gray encoding
 there may be some bits in the previous value and some are in the new value, to avoid these functional errors we use gray encoding (only one-bit changes at a time )
-![image](https://user-images.githubusercontent.com/130048247/235584935-cd3cba43-36be-42bd-9ec0-1e4f840c8bec.png)
+
+![image](https://user-images.githubusercontent.com/130048247/235584805-055a6548-3e43-46e6-985c-78c32e88a29c.png)
+
 
 
 ## Hand-shaking data between clock domain
 Request signal synchronous with receiving clock domain and recognized correctly at receiving end. 
 After data is captured correctly the destination end sends an acknowledgment signal to the transmitting domain end.
-![Uploading image.png…]()
+![image](https://user-images.githubusercontent.com/130048247/235584935-cd3cba43-36be-42bd-9ec0-1e4f840c8bec.png)
 
 ## Pulse synchronizers
 Fast to slow clock domain (chances of missing pulse).
