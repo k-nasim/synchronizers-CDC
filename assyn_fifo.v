@@ -40,7 +40,7 @@ always @(posedge wr_clk) begin
 end
 
 
-assign full = ((wr_pointer[3]!=rd_pointer_sync[3]) && (wr_pointer[2:0]!= rd_pointer_sync[2:0]))?1:0;
+	assign full = ((wr_pointer[3]!=rd_pointer_sync[3]) && (wr_pointer[2:0]== rd_pointer_sync[2:0]))?1:0;
 assign empty = (wr_pointer_sync == rd_pointer)?1:0;
 
 assign dataout = mem [ rd_pointer[2:0]];
