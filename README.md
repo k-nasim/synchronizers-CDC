@@ -80,7 +80,7 @@ It is worth noting that a FIFO would be Full only at the update of a write point
 However, it would come out of the Full only at the update of a read pointer. The
 schematic shows that for the generation of Full signal, the write pointer feeds in
 directly to the comparator. That means, the generation of the Full signal is without any delay. However, due to the delay (because of synchronization) on the read
-pointer side, the FIFO might take an extra cycle to deassert the Full signal.
+pointer side, the FIFO might take an extra cycle to deassert the Full signal. 
 Similarly, for the generation of Empty signal, the read pointer feeds in directly to
 the comparator. That means, the generation of the Empty signal is without any delay.
 However, due to the delay on the write pointer side, the FIFO might take an extra
