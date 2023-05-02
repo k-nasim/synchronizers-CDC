@@ -28,9 +28,9 @@ Request signal synchronous with receiving clock domain and recognized correctly 
 After data is captured correctly the destination end sends an acknowledgment signal to the transmitting domain end.
 
 ## Pulse synchronizers
-Fast to slow clock domain (chances of missing pulse)
+Fast to slow clock domain (chances of missing pulse).
 converting pulse to level.
 
 
-Back-to-back pulses can't be handled in pulse synchronizers
+Back-to-back pulses can't be handled in pulse synchronizers.
 If more than one pulse comes handshake-based pulse synchronizer is used.
