@@ -1,0 +1,106 @@
+# exaample constraints
+
+#first flipflop
+
+# defining common clock definition
+
+create_clock -period <period> -name clk1 (get_port clk1)
+create_clock -period <period> -name clk2 (get_port clk2)
+create_generated_clock -name clk1 -source (get_ports clk1) -combinational
+create_generated_clock -name clk2 -source (get_ports clk2) -combinational
+
+# defining clock condition using mux
+set_case_analysis  -name (get_port sel)
+set_case_analysis 1 -name (get_port clkout1) (get_port clk1) -source sel
+set_case_analysis 0 -name (get_port clkout1) (get_port clk2) -source sel
+
+#defining data in
+set_data -direction IN -name datain -source (get_port datain) -dest (get_pin ff/a)
+
+# defining data output
+create_generated_clock -name q -source (get_port clk1) -divide_by 2 (get_pin ff/a)
+create_generated_clock -name q -source (get_port clk2) -divide_by 2 (get_pin ff/a)
+
+#setpin SCLR
+set_pin -name SCLR (get_pin ff/a)
+
+#defining clock groups
+set_clock_groups -logically exclusive -group clk1 -group clk2
+
+
+#second flipflop
+
+#defining 2nd mux
+
+create_generated_clock -name clk1 -source (get_ports clk1) -combinational
+create_generated_clock -name clk2 -source (get_ports clk2) -combinational
+
+#defining select line
+set_case_analysis 1 -name (get_port clkout2) (get_port clk1) -source sel
+set_case_analysis 0 -name (get_port clkout2) (get_port clk2) -source sel
+
+#defining data in
+set_data -direction IN -name D -source (get_pin q) -destination (get_pin ff/b)
+
+# set pin SCLR
+set_pin -name SCLR (get_pin ff/b)
+
+#defining data output
+create_generated_clock -name dataout -source (get_port clk1) -divide_by 2 (get_pin ff/b)
+create_generated_clock -name dataout -source (get_port clk2) -divide_by 2 (get_pin ff/b)
+
+
+
+
+
+current_design top
+
+
+
+# Clock Constraints
+create_clock -name "top.clk1" -period 10 -waveform {0 5} [get_ports clk1] -domain domain1
+create_clock -name "top.clk2" -period 20 -waveform {0 10} [get_ports clk2] -domain domain2
+
+//# Input Delay Constraints
+//set_input_delay -clock clkout1 -min 1 -max 1 [get_ports datain]
+
+set_input_delay 1.0 -clock clk1 {datain}
+set_input_delay 1.7 -clock clk2-add_delay { dataout }
+
+//# Output Delay Constraint
+//set_output_delay -clock clkout2 -min 1 -max 1 [get_ports dataout]
+
+set_output_delay 1.0 -clock clk1 {datain}
+set_output_delay 1.7 -clock clk2 -add_delay {dataout}
+
+
+
+# Latency Constraint
+set_latency 1 [get_clocks *]
+
+
+set_case_analysis sel -name "top.sel" -value 1
+
+
+
+set_clock_uncertainty -setup 0.6 [get_clocks clk1]
+set_clock_uncertainty -hold 0.4 [get_clocks clk1]
+
+set_clock_uncertainty -setup 0.6 [get_clocks clk2]
+set_clock_uncertainty -hold 0.4 [get_clocks clk2]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
