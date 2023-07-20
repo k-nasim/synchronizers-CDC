@@ -1,0 +1,241 @@
+2 FLOP SYNCHRONIZER :
+
+
+module verilog(input clk1,rst1,clk2,rst2,in, output reg out);
+reg q1,q2,q3;
+
+always@(posedge clk1 or posedge rst1)
+begin
+if(rst1)
+q1<=0;
+else
+q1<=in;
+end
+
+always@(posedge clk2 or posedge rst2)
+begin
+if(rst2)
+begin
+q2<=0;
+q3<=0;
+out<=0;
+end
+else
+begin
+q2<=q1;
+q3<=q2;
+out<=q3;
+end
+end
+endmodule
+
+
+
+MUX SYNCHRONIZER :
+
+module verilog(input clk1,rst1,clk2,rst2,en, input [2:0]data, output reg [2:0]out);
+reg q1,q2,q3;
+wire [2:0]q4;
+
+always@(posedge clk1 or posedge rst1)
+begin
+if(rst1)
+q1<=0;
+else
+q1<=en;
+end
+
+always@(posedge clk2 or posedge rst2)
+begin
+if(rst2)
+begin
+q2<=0;
+q3<=0;
+out<=0;
+//q4<=0;
+//out<=0;
+end
+else
+begin
+q2<=q1;
+q3<=q2;
+out<=q4;
+//q4<=q3?data:out;
+//if(q3)
+//out<=data;
+//else
+//out<=out;
+end
+end
+
+//always@(q3 or data or out)
+//begin
+//if(q3)
+//q4<=data;
+//else
+//q4<=out;
+//end
+
+assign q4=q3?data:out;
+
+endmodule
+
+
+
+HANDSHAKE SYNCHRONIZER :
+
+module verilog(input clk1,rst1,clk2,rst2, input req,ack, input [2:0]in, output reg [2:0]out);
+reg q1,q1req,q2req,q3,q3ack,q4ack;
+reg [2:0]qin;
+
+always@(posedge clk1 or posedge rst1)
+begin
+if(rst1)
+begin
+q1<=0;
+//qin<=0;
+q3<=0;
+q3ack<=0;
+q4ack<=0;
+end
+else
+begin
+q1<=req;
+//qin<=in;
+q3<=ack;
+q3ack<=q3;
+q4ack<=q3ack; 
+if(req)
+qin<=in;
+else
+qin<=0;
+end
+end
+
+
+always@(posedge clk2 or posedge rst2)
+begin
+if(rst2)
+begin
+q1req<=0;
+q2req<=0;
+end
+else
+begin
+q1req<=q1;
+q2req<=q1req;
+q3<=ack;
+//out<=in;
+if(ack)
+out<=qin;
+else
+out<=0;
+end
+end
+
+endmodule
+
+
+
+PULSE SYNCHRONIZER : 
+
+module verilog(input clk1,rst1,clk2,rst2,sync_in, output sync_out);
+reg q1,q2,q3,q4;
+//reg f;
+
+//assign sync_out = q3^q4;
+//assign f = sync_in?(~q1):(q1);
+
+always@(posedge clk1 or posedge rst1)
+begin
+if(rst1)
+q1<=0;
+else
+if(sync_in)
+q1<=~q1;
+else
+q1<=q1;
+end
+
+always@(posedge clk2 or posedge rst2)
+begin
+if(rst2)
+begin
+q2<=0;
+q3<=0;
+q4<=0;
+end
+else
+begin
+q2<=q1;
+q3<=q2;
+q4<=q3;
+end
+end
+
+assign sync_out = q3^q4;
+//assign f = sync_in?(~q1):(q1);
+
+endmodule
+
+
+HANDSHAKE PULSE SYNCHRONIZER :
+
+module verilog(input clk1,rst1,clk2,rst2,in, output out,busy);
+reg q1,q2,q3,q4,q5,q6;
+//wire f1,f2;
+
+always@(posedge clk1 or posedge rst1)
+begin
+if(rst1)
+begin
+q1<=0;
+end
+else
+begin
+case({q5,in})
+00: q1<=q1;
+01: q1<=1;
+10: q1<=0;
+11: q1<=1;
+endcase
+end
+end
+
+always@(posedge clk2 or posedge rst2)
+begin
+if(rst2)
+begin
+q2<=0;
+q3<=0;
+q4<=0;
+end
+else
+begin
+q2<=q1;
+q3<=q2;
+q4<=q3;
+end
+end
+
+always@(posedge clk1 or posedge rst1)
+begin
+if(rst1)
+begin
+q5<=0;
+q6<=0;
+end
+else
+begin
+q5<=q3;
+q6<=q5;
+end
+end
+
+assign busy = q1|q6;
+assign out = q3*(~q4);
+//assign f1 = q6?0:q1;
+//assign f2 = in?1:f1;
+
+endmodule
+
